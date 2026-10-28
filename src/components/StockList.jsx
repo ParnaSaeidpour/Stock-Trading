@@ -9,6 +9,7 @@ import { WatchListContext } from "../context/watchlistContext"
 
 export const StockList = () => {
   const [stock, setStock] = useState([])
+  const [error, setError] = useState("")
   const { watchList, deleteStock } = useContext(WatchListContext)
   const navigate = useNavigate()
 
@@ -25,31 +26,27 @@ export const StockList = () => {
     let isMounted = true
     const fetchData = async () => {
 
-      try {
-        const responses = await Promise.all(watchList.map((stock) => {
-          return finnHub.get("/quote", {
-            params: {
-              symbol: stock
-            }
-          })
-        }))
-
-        console.log(responses)
-        const data = responses.map((response) => {
-          return {
-            data: response.data,
-            symbol: response.config.params.symbol
+      // allSettled: one failing symbol does not hide the rest of the list
+      const responses = await Promise.allSettled(watchList.map((stock) => {
+        return finnHub.get("/quote", {
+          params: {
+            symbol: stock
           }
-
         })
-        console.log(data)
-        if (isMounted) {
-          setStock(data)
-        }
+      }))
+      if (!isMounted) return
 
-      } catch (err) {
-
-      }
+      const data = responses
+        .filter((response) => response.status === "fulfilled")
+        .map((response) => {
+          return {
+            data: response.value.data,
+            symbol: response.value.config.params.symbol
+          }
+        })
+      const failed = responses.length - data.length
+      setStock(data)
+      setError(failed > 0 ? `Could not load prices for ${failed} of ${responses.length} stocks. Check your API key and rate limit.` : "")
     }
     fetchData()
 
@@ -62,6 +59,7 @@ export const StockList = () => {
 
 
   return (<div>
+    {error && <div className="alert alert-warning mt-4" role="alert">{error}</div>}
     <table className="table hover mt-5">
       <thead style={{ color: "rgb(79,89,102)" }}>
         <tr>

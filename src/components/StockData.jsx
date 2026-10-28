@@ -3,6 +3,7 @@ import finnHub from "../apis/finnHub";
 export const StockData = ({ symbol }) => {
 
   const [stockData, setStockData] = useState()
+  const [error, setError] = useState("")
 
   useEffect(() => {
     let isMounted = true;
@@ -13,18 +14,20 @@ export const StockData = ({ symbol }) => {
             symbol
           }
         })
-        console.log(response)
         if (isMounted) {
           setStockData(response.data)
         }
       } catch (err) {
-        console.log(err)
+        if (isMounted) {
+          setError("Company information could not be loaded.")
+        }
       }
     }
     fetchData()
     return () => (isMounted = false);
   }, [symbol])
   return <div>
+    {error && <div className="alert alert-warning mt-5" role="alert">{error}</div>}
     {stockData && (
 
       <div className="row border bg-white rounded shadow-sm p-4 mt-5">
@@ -67,7 +70,7 @@ export const StockData = ({ symbol }) => {
           </div>
           <div>
             <span className="fw-bold">url: </span>
-            <a href={stockData.weburl}>{stockData.weburl}</a>
+            <a href={stockData.weburl} target="_blank" rel="noopener noreferrer">{stockData.weburl}</a>
           </div>
         </div>
       </div>
