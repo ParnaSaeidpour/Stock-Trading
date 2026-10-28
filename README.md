@@ -2,7 +2,7 @@
 
 A React app for following stocks: search for a company, add it to your watch list, see live quotes, and open a detail page with a price chart and company information. Market data comes from the [Finnhub API](https://finnhub.io).
 
-> Originally built in November–December 2022 (on Replit). Reliability fixes, tests and CI were added in October 2026 (see [Changelog](#changelog)).
+> Built in November–December 2022. Updated in October 2026 with tests, CI and improved error handling.
 
 ## Screenshots
 
@@ -118,20 +118,3 @@ src/
 ├── utils/stocks.js          # data helpers
 └── __tests__/               # Vitest tests
 ```
-
-## Changelog
-
-**October 2026**
-- Security: the API key is read from `.env` instead of the source code; added `.gitignore` and `.env.example`.
-- Fixed: the detail page was blank when the chart data could not be loaded; it now shows company information and a message.
-- Fixed: one failing quote request hid the whole watch list; other stocks are now still shown with a warning.
-- Fixed: removing every stock and reloading showed an empty row.
-- Fixed: search dropdown CSS classes (`dropdown-menu`, `form-floating`) and an API call on every keystroke.
-- Fixed: `npm run build` failed (it ran `tsc` without a TypeScript config).
-- Fixed: the logo image file was empty; replaced with a title and icon.
-- Removed an unused package (`react-icon`), Replit template leftovers and debug logging; development server no longer listens on all network interfaces.
-- Updated dependencies within their allowed version ranges (`npm audit fix`). Some development-server warnings remain that need major upgrades (Vite 3 → 8, React Router 6 → 7).
-- Added Vitest tests, GitHub Actions CI and a README.
-
-**November–December 2022**
-- Original version.
