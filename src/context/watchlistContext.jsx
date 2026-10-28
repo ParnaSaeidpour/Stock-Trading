@@ -1,15 +1,16 @@
 import { createContext, useState, useEffect } from "react"
+import { parseWatchList } from "../utils/stocks"
 
 export const WatchListContext = createContext()
-//["GOOGL", "MSFT", "AMZN"]
+
 export const WatchListContextProvider = (props) => {
 
   const [watchList, setWatchList] = useState(
-    localStorage.getItem("watchList")?.split(",") || ["GOOGL", "MSFT", "AMZN"]
+    () => parseWatchList(localStorage.getItem("watchList"))
   )
 
   useEffect(() => {
-    localStorage.setItem("watchList", watchList)
+    localStorage.setItem("watchList", JSON.stringify(watchList))
   }, [watchList])
 
   const addStock = (stock) => {

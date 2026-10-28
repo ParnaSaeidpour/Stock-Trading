@@ -10,14 +10,14 @@ export const AutoComplete = () => {
   
 
   const renderDropdown =() =>{
-    const dropDownClass = search ? "show" :null
+    const dropDownClass = search && results.length > 0 ? "show" :null
     return(
       <ul style={{
         cursor :"pointer",
         overflowY: "scroll",
         overflowX :"hidden",
 
-      }}className={`drowppdown-menu ${dropDownClass}`}>
+      }}className={`dropdown-menu ${dropDownClass}`}>
         {results.map((result)=>{
         return(
         <li onClick={() =>{addStock(result.symbol)
@@ -45,30 +45,37 @@ export const AutoComplete = () => {
           }
         })
         if(isMounted){
-          setResults(response.data.result)
-        }    
-        
+          setResults(response.data.result || [])
+        }
+
       } catch (err) {
-        
+        if(isMounted){
+          setResults([])
+        }
       }
     }
     
+    // Wait until the user stops typing, so each keystroke does not use up the API rate limit
+    let timer
     if(search.length >0){
-      fetchData()
+      timer = setTimeout(fetchData, 300)
     }else{
       setResults([])
     }
-    return()=> (isMounted =false)
+    return()=> {
+      isMounted =false
+      clearTimeout(timer)
+    }
     
   },[search])
 
   
   return <div className = "w-50 p-5 rounded mx-auto">
-  <div className ="from-floating dropdown">
-    <input  style ={{backgroundColor: "rgb(145,158,171,0.04"}} id= "search" type="text" className ="form-control" placeholder="Search" autoComplete="off" value ={search} onChange={(e)=> setSearch(e.target.value)} >
+  <div className ="form-floating dropdown">
+    <input  style ={{backgroundColor: "rgba(145,158,171,0.04)"}} id= "search" type="text" className ="form-control" placeholder="Search" autoComplete="off" value ={search} onChange={(e)=> setSearch(e.target.value)} >
     </input>
     
-    <label htmlFor="search"></label>
+    <label htmlFor="search">Search stocks</label>
     {renderDropdown()}
   </div>
 

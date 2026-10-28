@@ -1,11 +1,12 @@
+import { BsGraphUp } from "react-icons/bs"
 import { AutoComplete } from "../components/AutoComplete"
 import { StockList } from "../components/StockList"
-import trading from "../images/Tranding.png"
 export const StockOverviewPage = () => {
   return <div>
-    <div className="text-center" >
-      <img src="https://www.kindpng.com/picc/m/78-788160_transparent-stock-market-icon-png-png-download.png" width="200" />
-    </div>
+    <h1 className="text-center mt-4">
+      <BsGraphUp className="text-success me-2" />
+      Stock Watchlist
+    </h1>
     <AutoComplete />
     <StockList />
   </div>

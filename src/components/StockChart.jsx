@@ -1,5 +1,6 @@
 import Chart from "react-apexcharts"
 import { useState } from "react"
+import { chartColor } from "../utils/stocks"
 export const StockChart = ({ chartData, symbol }) => {
   const [dateFormat, setDateFormat] = useState("24h")
   const { day, week, year } = chartData
@@ -17,7 +18,8 @@ export const StockChart = ({ chartData, symbol }) => {
     }
   }
 
-  const color = determineTimeFormat()[determineTimeFormat().length - 1].y - determineTimeFormat()[0].y > 0 ? "#26C281" : "#ed3419"
+  const points = determineTimeFormat()
+  const color = chartColor(points)
 
   const options = {
     colors: [color],
@@ -33,6 +35,9 @@ export const StockChart = ({ chartData, symbol }) => {
       animations: {
         speed: 1300
       }
+    },
+    dataLabels: {
+      enabled: false
     },
     xaxis: {
       type: "datetime",
@@ -50,7 +55,7 @@ export const StockChart = ({ chartData, symbol }) => {
 
   const series = [{
     name: symbol,
-    data: determineTimeFormat()
+    data: points
   }]
 
   const renderButtonSelect = (button) => {
@@ -63,7 +68,9 @@ export const StockChart = ({ chartData, symbol }) => {
   }
 
   return <div className="mt-5 p-4 shadow-sm bg-white">
-    <Chart options={options} series={series} type="area" width="100%" />
+    {points.length > 0
+      ? <Chart options={options} series={series} type="area" width="100%" />
+      : <p className="text-muted text-center my-5">No data for this period.</p>}
     <div>
       <button className={renderButtonSelect("24h")} onClick={() => setDateFormat("24h")}>24h</button>
       <button className={renderButtonSelect("7d")} onClick={() => setDateFormat("7d")}>7d</button>
